@@ -6,6 +6,9 @@
 #include <assert.h>
 #include <complex.h>
 #include <math.h>
+#include <time.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #define ADC_BUFFER_SIZE  512
 #define N   ADC_BUFFER_SIZE
@@ -89,6 +92,10 @@ int main(void)
     double x[ADC_BUFFER_SIZE];
     double y[ADC_BUFFER_SIZE/2];
 
+    struct rusage ru;
+    struct timeval utime;
+    struct timeval stime;
+
     init_x(x);
     slow_DFT(x, y);
 
@@ -107,6 +114,14 @@ int main(void)
 	printf("%lf\n", y[i]);
     }
 
+    getrusage(RUSAGE_SELF, &ru);
+
+    utime = ru.ru_utime;
+    stime = ru.ru_stime;
+
+    printf("RUSAGE :ru_utime => %lld [sec] : %lld [usec], :ru_stime => %lld [sec] : %lld [usec]\n",
+	    (int64_t)utime.tv_sec, (int64_t)utime.tv_usec,
+	    (int64_t)stime.tv_sec, (int64_t)stime.tv_usec);
     fclose(fft_fd);
 
 }
