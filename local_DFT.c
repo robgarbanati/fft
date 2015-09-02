@@ -10,12 +10,18 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-#define ADC_BUFFER_SIZE  512
+#define ADC_BUFFER_SIZE  32
 #define N   ADC_BUFFER_SIZE
 #define PI 3.14159265359
 
+typedef struct 
+{
+    double *array;
+    int length;
+} double_array;
 
-double cmag(complex number)
+
+double cmag(complex double number)
 {
     double realnum = creal(number);
     double inum = cimag(number);
@@ -78,11 +84,101 @@ void slow_DFT(double *x, double *y)
     int k;
     for(k=0;k<ADC_BUFFER_SIZE/2;k++)
     {
-	y[k] = find_discrete_freq(x, k);
-	printf("y[%d] = %lf\n", k, y[k]);
+        y[k] = find_discrete_freq(x, k);
+        printf("y[%d] = %lf\n", k, y[k]);
+    }
+}
+void copy_DFT(double_array *x, double_array *y)
+{
+    int k;
+    for(k=0;k<x->length;k++)
+    {
+        y->array[k] = x->array[k];
+    }
+}
+void fast_FFT(double_array *x, double_array *y)
+{
+    /*int k;*/
+    int i = 0;
+    int newlength = x->length/2;
+    double even_array[newlength];
+    double odd_array[newlength];
+
+    double_array x_even = 
+    {
+        even_array,
+        newlength
+    };
+
+    double_array x_odd = 
+    {
+        odd_array,
+        newlength
+    };
+
+    double_array y_odd = 
+    {
+        odd_array,
+        newlength
+    };
+
+    double_array y_even = 
+    {
+        odd_array,
+        newlength
+    };
+
+    for(i=0;i<x->length/2;i++)
+    {
+        odd_array[i] = x->array[i*2+1];
     }
 
+    for(i=0;i<x->length/2;i++)
+    {
+        even_array[i] = x->array[i*2];
+    }
+
+    for(i=0;i<x->length;i++)
+    {
+        printf("%f ", x->array[i]);
+    }
+    puts("\n");
+
+    if(x->length % 2 != 0)
+    {
+        fprintf(stderr, "xarray should be a power of 2");
+        exit(-1);
+    }
+    else if (x->length <= 4)
+    {
+        copy_DFT(x, y);
+    }
+    else
+    {
+        fast_FFT(&x_even, y);
+        fast_FFT(&x_odd, y);
+    }
 }
+    
+
+/*
+ *def FFT(x):
+ *    """A recursive implementation of the 1D Cooley-Tukey FFT"""
+ *    x = np.asarray(x, dtype=float)
+ *    N = x.shape[0]
+ *
+ *    if N % 2 > 0:
+ *        raise ValueError("size of x must be a power of 2")
+ *    elif N <= 32:  # this cutoff should be optimized
+ *        return DFT_slow(x)
+ *    else:
+ *        X_even = FFT(x[::2])
+ *        X_odd = FFT(x[1::2])
+ *        factor = np.exp(-2j * np.pi * np.arange(N) / N)
+ *        return np.concatenate([X_even + factor[:N / 2] * X_odd,
+ *                               X_even + factor[N / 2:] * X_odd])
+ */
+
 
 int main(void)
 {
@@ -91,38 +187,53 @@ int main(void)
     /*int16_t y[ADC_BUFFER_SIZE];*/
     double x[ADC_BUFFER_SIZE];
     double y[ADC_BUFFER_SIZE/2];
-
-    struct rusage ru;
-    struct timeval utime;
-    struct timeval stime;
-
-    init_x(x);
-    slow_DFT(x, y);
-
-    FILE* fft_fd = fopen("fft_output.txt", "w");
-
-    if(fft_fd < ((FILE* ) 0))
+    double_array xarray = 
     {
-	perror("open fft_output.txt");
-	return;
-    }
-    puts("opened fft_output.txt!");
+        x,
+        ADC_BUFFER_SIZE
+    };
 
-    for(i=0;i<ADC_BUFFER_SIZE/2;i++)
+    /*
+     *struct rusage ru;
+     *struct timeval utime;
+     *struct timeval stime;
+     */
+
+    /*init_x(x);*/
+    for(i=0;i<ADC_BUFFER_SIZE;i++)
     {
-	fprintf(fft_fd, "%lf\n", y[i]);
-	printf("%lf\n", y[i]);
+        x[i] = i;
     }
 
-    getrusage(RUSAGE_SELF, &ru);
+    /*slow_DFT(x, y);*/
+    fast_FFT(&xarray, y);
 
-    utime = ru.ru_utime;
-    stime = ru.ru_stime;
-
-    printf("RUSAGE :ru_utime => %lld [sec] : %lld [usec], :ru_stime => %lld [sec] : %lld [usec]\n",
-	    (int64_t)utime.tv_sec, (int64_t)utime.tv_usec,
-	    (int64_t)stime.tv_sec, (int64_t)stime.tv_usec);
-    fclose(fft_fd);
+/*
+ *    FILE* fft_fd = fopen("fft_output.txt", "w");
+ *
+ *    if(fft_fd < ((FILE* ) 0))
+ *    {
+ *        perror("open fft_output.txt");
+ *        return -1;
+ *    }
+ *    puts("opened fft_output.txt!");
+ *
+ *    for(i=0;i<ADC_BUFFER_SIZE/2;i++)
+ *    {
+ *        fprintf(fft_fd, "%lf\n", y[i]);
+ *        printf("%lf\n", y[i]);
+ *    }
+ *
+ *    getrusage(RUSAGE_SELF, &ru);
+ *
+ *    utime = ru.ru_utime;
+ *    stime = ru.ru_stime;
+ *
+ *    printf("RUSAGE :ru_utime => %lld [sec] : %lld [usec], :ru_stime => %lld [sec] : %lld [usec]\n",
+ *            (int64_t)utime.tv_sec, (int64_t)utime.tv_usec,
+ *            (int64_t)stime.tv_sec, (int64_t)stime.tv_usec);
+ *    fclose(fft_fd);
+ */
 
 }
 

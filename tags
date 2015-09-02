@@ -4,46 +4,77 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-ADC_BUFFER_SIZE	local_DFT.c	9;"	d	file:
+ADC_BUFFER_SIZE	local_DFT.c	13;"	d	file:
 ADC_BUFFER_SIZE	local_IIR_test.c	11;"	d	file:
 CIRCBUF_LENGTH	local_IIR_test.c	8;"	d	file:
 CircBuf	local_IIR_test.c	/^} CircBuf;$/;"	t	typeref:struct:__anon2	file:
 DFT_slow	DFT_slow.py	/^def DFT_slow(x):$/;"	f
+DirectoryOfThisScript	.ycm_extra_conf.py	/^def DirectoryOfThisScript():$/;"	f
 FFT	fft.py	/^def FFT(x):$/;"	f
+FFT1	moduletest.py	/^FFT1 = fft.FFT(x[2])$/;"	v
+FFT2	moduletest.py	/^FFT2 = fft.FFT(long1)$/;"	v
+FlagsForFile	.ycm_extra_conf.py	/^def FlagsForFile( filename, **kwargs ):$/;"	f
+Fs	fft.py	/^Fs = 8000$/;"	v
 GAIN	local_IIR_test.c	13;"	d	file:
-N	local_DFT.c	10;"	d	file:
-N	moduletest.py	/^N = len(x[1])$/;"	v
+GetCompilationInfoForFile	.ycm_extra_conf.py	/^def GetCompilationInfoForFile( filename ):$/;"	f
+IsHeaderFile	.ycm_extra_conf.py	/^def IsHeaderFile( filename ):$/;"	f
+MakeRelativePathsInFlagsAbsolute	.ycm_extra_conf.py	/^def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):$/;"	f
+N	generate_exp_array.py	/^N = 512$/;"	v
+N	local_DFT.c	14;"	d	file:
 NA	local_IIR_test.c	10;"	d	file:
 NB	local_IIR_test.c	9;"	d	file:
-PI	local_DFT.c	11;"	d	file:
+PI	local_DFT.c	15;"	d	file:
+SOURCE_EXTENSIONS	.ycm_extra_conf.py	/^SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm' ]$/;"	v
 Samples	local_IIR_test.c	/^} Samples;$/;"	t	typeref:struct:__anon1	file:
 alloc_size	local_IIR_test.c	/^    size_t alloc_size;$/;"	m	struct:__anon1	file:
+array	local_DFT.c	/^    double *array;$/;"	m	struct:__anon3	file:
 array	local_IIR_test.c	/^    int *array;$/;"	m	struct:__anon1	file:
 array	local_IIR_test.c	/^    int64_t array[CIRCBUF_LENGTH];$/;"	m	struct:__anon2	file:
+array_of_exp	generate_exp_array.py	/^array_of_exp = np.exp(-2j * np.pi * k * n \/ N)$/;"	v
+cfile	generate_exp_array.py	/^cfile=open('.\/exponent_table.h', 'w')$/;"	v
 circbuf_access	local_IIR_test.c	/^int64_t circbuf_access(CircBuf* buffer, uint8_t position)$/;"	f
 circbuf_init	local_IIR_test.c	/^void circbuf_init(CircBuf* buffer)$/;"	f
 circbuf_push	local_IIR_test.c	/^void circbuf_push(CircBuf* buffer, int64_t element)$/;"	f
-data	moduletest.py	/^data = np.genfromtxt('data.txt', delimiter=', ', names=True, skiprows=3)$/;"	v
+cmag	local_DFT.c	/^double cmag(complex double number)$/;"	f
+compilation_database_folder	.ycm_extra_conf.py	/^compilation_database_folder = ''$/;"	v
+data	moduletest.py	/^data = np.genfromtxt('data.txt', delimiter=', ', names=True, skiprows=0)$/;"	v
+database	.ycm_extra_conf.py	/^  database = None$/;"	v
+database	.ycm_extra_conf.py	/^  database = ycm_core.CompilationDatabase( compilation_database_folder )$/;"	v
+double_array	local_DFT.c	/^} double_array;$/;"	t	typeref:struct:__anon3	file:
 elliptic_filter	local_IIR_test.c	/^void elliptic_filter(int16_t* x, int16_t* y, int* ymax)$/;"	f
+f	fft.py	/^f = 500$/;"	v
+f	moduletest.py	/^f = open('data.txt')$/;"	v
+fast_FFT	local_DFT.c	/^void fast_FFT(double_array *x, double *y)$/;"	f
 faster_find_discrete_freq	discrete_freq.py	/^def faster_find_discrete_freq(x, k, N):$/;"	f
+ffty	fft.py	/^ffty = FFT(y)$/;"	v
 find_discrete_freq	discrete_freq.py	/^def find_discrete_freq(x, k):$/;"	f
-find_discrete_freq	local_DFT.c	/^float find_discrete_freq(float *x, int k)$/;"	f
+find_discrete_freq	local_DFT.c	/^double find_discrete_freq(double *x, int k)$/;"	f
+flags	.ycm_extra_conf.py	/^flags = [$/;"	v
 free_array	local_IIR_test.c	/^void free_array(Samples *a)$/;"	f
 head	local_IIR_test.c	/^    uint8_t head;$/;"	m	struct:__anon2	file:
+imag_exp_array	exponent_table.h	/^double imag_exp_array[] = {$/;"	v
 init_array	local_IIR_test.c	/^void init_array(Samples *a, size_t initialSize)$/;"	f
-init_x	local_DFT.c	/^void init_x(float *x)$/;"	f
+init_x	local_DFT.c	/^void init_x(double *x)$/;"	f
 init_x	local_IIR_test.c	/^void init_x(int16_t* x)$/;"	f
 insert_array	local_IIR_test.c	/^void insert_array(Samples *a, int element)$/;"	f
+k	generate_exp_array.py	/^k = 1$/;"	v
+length	local_DFT.c	/^    int length;$/;"	m	struct:__anon3	file:
 length	local_IIR_test.c	/^    size_t length;$/;"	m	struct:__anon1	file:
 list_data	moduletest.py	/^list_data = [list(row) for row in data]$/;"	v
+long1	moduletest.py	/^long1 = np.concatenate((x[2], x[2][::-1]))$/;"	v
 main	complex_practice.c	/^int main() {$/;"	f
+main	getrusage.c	/^int main(int argc, char *argv[]) {$/;"	f
 main	local_DFT.c	/^int main(void)$/;"	f
 main	local_IIR_test.c	/^int main(void)$/;"	f
 medium_DFT	discrete_freq.py	/^def medium_DFT(x, start_freq, end_freq, sample_freq):$/;"	f
+n	generate_exp_array.py	/^n = np.arange(N)$/;"	v
 plotfft	datatools.py	/^def plotfft(data_list, sample_freq):$/;"	f
-sayhi	himodule.py	/^def sayhi():$/;"	f
+real_exp_array	exponent_table.h	/^double real_exp_array[] = {$/;"	v
+sample	fft.py	/^sample = 64$/;"	v
 slow_DFT	discrete_freq.py	/^def slow_DFT(x, start_freq, end_freq, sample_freq):$/;"	f
-slow_DFT	local_DFT.c	/^void slow_DFT(float *x, float *y)$/;"	f
-version	himodule.py	/^version = '0.1'$/;"	v
+slow_DFT	local_DFT.c	/^void slow_DFT(double *x, double *y)$/;"	f
+wf	fft.py	/^wf = np.linspace(0.0, Fs\/2, sample\/2)$/;"	v
+x	fft.py	/^x = np.arange(sample)$/;"	v
 x	moduletest.py	/^x = np.asarray(list_data, dtype=float)$/;"	v
 x	moduletest.py	/^x = np.transpose(x)$/;"	v
+y	fft.py	/^y = x$/;"	v
