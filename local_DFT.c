@@ -68,11 +68,11 @@ void init_x(double *x)
 double find_discrete_freq(double *x, int k)
 {
     int n;
-    complex Xk = 0;
+    complex double Xk = 0;
 
     for(n=0;n<ADC_BUFFER_SIZE;n++)
     {
-	Xk += cexp(-2*I*PI*k*n/N) * (complex) x[n];
+	Xk += cexp(-2*I*PI*k*n/N) * (complex double) x[n];
 	/*printf("x[%d]=%lf, cexp=%lf+%lfi, Xk=%lf\n", n, x[n], creal(cexp(-2*I*PI*k*n/N)), cimag(cexp(-2*I*PI*k*n/N)), Xk);*/
     }
     printf("Xk=%lf+%lfi\n", creal(Xk), cimag(Xk));
@@ -88,6 +88,7 @@ void slow_DFT(double *x, double *y)
         printf("y[%d] = %lf\n", k, y[k]);
     }
 }
+
 void copy_DFT(double_array *x, double_array *y)
 {
     int k;
@@ -96,46 +97,49 @@ void copy_DFT(double_array *x, double_array *y)
         y->array[k] = x->array[k];
     }
 }
+
 void fast_FFT(double_array *x, double_array *y)
 {
     /*int k;*/
     int i = 0;
     int newlength = x->length/2;
-    double even_array[newlength];
-    double odd_array[newlength];
+    double even_xarray[newlength];
+    double odd_xarray[newlength];
+    double even_yarray[newlength];
+    double odd_yarray[newlength];
 
     double_array x_even = 
     {
-        even_array,
+        even_xarray,
         newlength
     };
 
     double_array x_odd = 
     {
-        odd_array,
+        odd_xarray,
         newlength
     };
 
     double_array y_odd = 
     {
-        odd_array,
+        odd_yarray,
         newlength
     };
 
     double_array y_even = 
     {
-        odd_array,
+        odd_yarray,
         newlength
     };
 
     for(i=0;i<x->length/2;i++)
     {
-        odd_array[i] = x->array[i*2+1];
+        odd_xarray[i] = x->array[i*2+1];
     }
 
     for(i=0;i<x->length/2;i++)
     {
-        even_array[i] = x->array[i*2];
+        even_xarray[i] = x->array[i*2];
     }
 
     for(i=0;i<x->length;i++)
@@ -155,8 +159,14 @@ void fast_FFT(double_array *x, double_array *y)
     }
     else
     {
-        fast_FFT(&x_even, y);
-        fast_FFT(&x_odd, y);
+        fast_FFT(&x_even, &y_even);
+        fast_FFT(&x_odd, &y_odd);
+
+        printf("y_even: ");
+        for(i=0;i<y_even.length;i++)
+        {
+            printf("%f ", y_even.array[i]);
+        printf("y_odd: ");
     }
 }
     
@@ -186,13 +196,17 @@ int main(void)
     /*int16_t x[ADC_BUFFER_SIZE];*/
     /*int16_t y[ADC_BUFFER_SIZE];*/
     double x[ADC_BUFFER_SIZE];
-    double y[ADC_BUFFER_SIZE/2];
+    double y[ADC_BUFFER_SIZE];
     double_array xarray = 
     {
         x,
         ADC_BUFFER_SIZE
     };
-
+    double_array yarray = 
+    {
+        y,
+        ADC_BUFFER_SIZE
+    };
     /*
      *struct rusage ru;
      *struct timeval utime;
@@ -206,7 +220,7 @@ int main(void)
     }
 
     /*slow_DFT(x, y);*/
-    fast_FFT(&xarray, y);
+    fast_FFT(&xarray, &yarray);
 
 /*
  *    FILE* fft_fd = fopen("fft_output.txt", "w");
