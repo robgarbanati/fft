@@ -171,6 +171,15 @@ void fast_FFT(double_array *x, complex_array *y)
         fast_FFT(&x_even, &y_even);
         fast_FFT(&x_odd, &y_odd);
 
+        complex double factor_array[x->length];
+        double N = x->length;
+
+        for(i=0;i<x->length;i++)
+        {
+            factor_array[i] = cexp(-2I * PI * (double) i / N);
+            printf("factor[%d] = %f + %fi\n", i, creal(factor_array[i]), cimag(factor_array[i]));
+        }
+
         printf("y_even: ");
         for(i=0;i<y_even.length;i++)
         {
