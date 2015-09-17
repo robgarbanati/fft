@@ -12,13 +12,13 @@ def FFT(x):
         raise ValueError("size of x must be a power of 2")
     elif N <= 4:  # this cutoff should be optimized
         dft_ret =  DFT_slow(x)
-        print dft_ret
+        print np.round(dft_ret*10000)/10000
         return dft_ret
     else:
         X_even = FFT(x[::2])
         X_odd = FFT(x[1::2])
         factor = np.exp(-2j * np.pi * np.arange(N) / N)
-        print factor
+        #print factor
         return np.concatenate([X_even + factor[:N / 2] * X_odd,
                                X_even + factor[N / 2:] * X_odd])
 
@@ -38,6 +38,7 @@ y = x
 #y = np.sin(2 * np.pi * f * x / Fs)
 #plt.plot(x, y)
 ffty = FFT(y)
+print ffty
 #ffty = DFT_slow(y)
 plt.semilogy(wf, 2.0/sample * np.abs(ffty[0:sample/2]))
 plt.ylabel('voltage(V)')

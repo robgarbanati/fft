@@ -57,7 +57,7 @@ void init_x(double *x)
             /*sample = (int16_t) atoi(buffer);*/
             sample = atof(buffer);
             x[i] = sample;
-            printf("buffer %s, sample %lf, x[%d] %lf\n", buffer, sample, i, x[i]);
+            printf("buffer %s, sample %.2f, x[%d] %.2f\n", buffer, sample, i, x[i]);
         }
         else
         {
@@ -79,9 +79,9 @@ complex double find_discrete_freq(double_array *x, int k)
     for(n=0;n<x->length;n++)
     {
         Xk += cexp(-2*I*PI*k*n/N) * (complex double) x->array[n];
-        /*printf("x[%d]=%lf, cexp=%lf+%lfi, Xk=%lf\n", n, x->array[n], creal(cexp(-2*I*PI*k*n/N)), cimag(cexp(-2*I*PI*k*n/N)), cmag(Xk));*/
+        /*printf("x[%d]=%.2f, cexp=%.2f+%.2fi, Xk=%.2f\n", n, x->array[n], creal(cexp(-2*I*PI*k*n/N)), cimag(cexp(-2*I*PI*k*n/N)), cmag(Xk));*/
     }
-    /*printf("Xk=%lf+%lfi\n", creal(Xk), cimag(Xk));*/
+    /*printf("Xk=%.2f+%.2fi\n", creal(Xk), cimag(Xk));*/
     /*return cmag(Xk);*/
     return Xk;
 }
@@ -92,9 +92,9 @@ void slow_DFT(double_array *x, complex_array *y)
     for(k=0;k<y->length;k++)
     {
         y->array[k] = find_discrete_freq(x, k);
-        /*printf("Xk=%lf+%lfi\n", creal(Xk), cimag(Xk));*/
-        printf("y[%d] = %lf+%lfi\n", k, creal(y->array[k]), cimag(y->array[k]));
-        /*printf("y[%d] = %lf\n", k, y->array[k]);*/
+        /*printf("Xk=%.2f+%.2fi\n", creal(Xk), cimag(Xk));*/
+        printf("y[%d] = %.2f+%.2fi\n", k, creal(y->array[k]), cimag(y->array[k]));
+        /*printf("y[%d] = %.2f\n", k, y->array[k]);*/
     }
 }
 
@@ -153,7 +153,7 @@ void fast_FFT(double_array *x, complex_array *y)
 
     for(i=0;i<x->length;i++)
     {
-        printf("%f ", x->array[i]);
+        printf("%.2f ", x->array[i]);
     }
     puts("\n");
 
@@ -177,25 +177,31 @@ void fast_FFT(double_array *x, complex_array *y)
         for(i=0;i<x->length;i++)
         {
             factor_array[i] = cexp(-2I * PI * (double) i / N);
-            printf("factor[%d] = %f + %fi\n", i, creal(factor_array[i]), cimag(factor_array[i]));
+            /*printf("factor[%d] = %.2f + %.2fi\n", i, creal(factor_array[i]), cimag(factor_array[i]));*/
         }
 
-        printf("y_even: ");
+        printf("y_even:\n");
         for(i=0;i<y_even.length;i++)
         {
-            printf("%f %f", creal(y_even.array[i]), cimag(y_even.array[i]));
+            printf("%.2f %.2f\n", creal(y_even.array[i]), cimag(y_even.array[i]));
         }
         puts("");
-        printf("y_odd: ");
+        printf("y_odd:\n");
         for(i=0;i<y_even.length;i++)
         {
-            printf("%f %f", creal(y_odd.array[i]), cimag(y_odd.array[i]));
+            printf("%.2f %.2f\n", creal(y_odd.array[i]), cimag(y_odd.array[i]));
         }
         puts("");
         for(i=0;i<y_even.length;i++)
         {
-            y->array[i] = y_even.array[i];
-            y->array[i+y_even.length] = y_odd.array[i];
+            y->array[i] = y_even.array[i] + factor_array[i] * y_odd.array[i];
+            y->array[i+y_even.length] = y_even.array[i] + factor_array[i+y_even.length] * y_odd.array[i];
+        }
+        puts("");
+        puts("y:");
+        for(i=0;i<y->length;i++)
+        {
+            printf("%.2f %.2f\n", creal(y->array[i]), cimag(y->array[i]));
         }
     }
 }
@@ -264,8 +270,8 @@ int main(void)
      *
      *    for(i=0;i<ADC_BUFFER_SIZE/2;i++)
      *    {
-     *        fprintf(fft_fd, "%lf\n", y[i]);
-     *        printf("%lf\n", y[i]);
+     *        fprintf(fft_fd, "%.2f\n", y[i]);
+     *        printf("%.2f\n", y[i]);
      *    }
      *
      *    getrusage(RUSAGE_SELF, &ru);
