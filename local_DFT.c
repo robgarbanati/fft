@@ -11,7 +11,6 @@
 #include <sys/resource.h>
 
 #define ADC_BUFFER_SIZE  32
-#define N   ADC_BUFFER_SIZE
 #define PI 3.14159265359
 
 typedef struct 
@@ -19,6 +18,12 @@ typedef struct
     double *array;
     int length;
 } double_array;
+
+typedef struct 
+{
+    complex double *array;
+    int length;
+} complex_array;
 
 
 double cmag(complex double number)
@@ -35,8 +40,8 @@ void init_x(double *x)
     FILE* data_fd = fopen("data.txt", "r");
     if(data_fd < ((FILE* ) 0))
     {
-	perror("open test.txt");
-	return;
+        perror("open test.txt");
+        return;
     }
 
     int i=0;
@@ -47,45 +52,49 @@ void init_x(double *x)
 
     for(i=0;i<ADC_BUFFER_SIZE;i++)
     {
-	if ((fscanf(data_fd, "%s %s %s ", temp, buffer, temp)) == 3)
-	{
-	    /*sample = (int16_t) atoi(buffer);*/
-	    sample = atof(buffer);
-	    x[i] = sample;
-	    printf("buffer %s, sample %lf, x[%d] %lf\n", buffer, sample, i, x[i]);
-	}
-	else
-	{
-	    puts("size mismatch");
-	    assert(0);
-	}
+        if ((fscanf(data_fd, "%s %s %s ", temp, buffer, temp)) == 3)
+        {
+            /*sample = (int16_t) atoi(buffer);*/
+            sample = atof(buffer);
+            x[i] = sample;
+            printf("buffer %s, sample %lf, x[%d] %lf\n", buffer, sample, i, x[i]);
+        }
+        else
+        {
+            puts("size mismatch");
+            assert(0);
+        }
     }
 
     fclose(data_fd);
 }
 
 /*int16_t find_discrete_freq(int16_t *x)*/
-double find_discrete_freq(double *x, int k)
+complex double find_discrete_freq(double_array *x, int k)
 {
     int n;
     complex double Xk = 0;
+    double N = (double) x->length;
 
-    for(n=0;n<ADC_BUFFER_SIZE;n++)
+    for(n=0;n<x->length;n++)
     {
-	Xk += cexp(-2*I*PI*k*n/N) * (complex double) x[n];
-	/*printf("x[%d]=%lf, cexp=%lf+%lfi, Xk=%lf\n", n, x[n], creal(cexp(-2*I*PI*k*n/N)), cimag(cexp(-2*I*PI*k*n/N)), Xk);*/
+        Xk += cexp(-2*I*PI*k*n/N) * (complex double) x->array[n];
+        /*printf("x[%d]=%lf, cexp=%lf+%lfi, Xk=%lf\n", n, x->array[n], creal(cexp(-2*I*PI*k*n/N)), cimag(cexp(-2*I*PI*k*n/N)), cmag(Xk));*/
     }
-    printf("Xk=%lf+%lfi\n", creal(Xk), cimag(Xk));
-    return cmag(Xk);
+    /*printf("Xk=%lf+%lfi\n", creal(Xk), cimag(Xk));*/
+    /*return cmag(Xk);*/
+    return Xk;
 }
 
-void slow_DFT(double *x, double *y)
+void slow_DFT(double_array *x, complex_array *y)
 {
     int k;
-    for(k=0;k<ADC_BUFFER_SIZE/2;k++)
+    for(k=0;k<y->length;k++)
     {
-        y[k] = find_discrete_freq(x, k);
-        printf("y[%d] = %lf\n", k, y[k]);
+        y->array[k] = find_discrete_freq(x, k);
+        /*printf("Xk=%lf+%lfi\n", creal(Xk), cimag(Xk));*/
+        printf("y[%d] = %lf+%lfi\n", k, creal(y->array[k]), cimag(y->array[k]));
+        /*printf("y[%d] = %lf\n", k, y->array[k]);*/
     }
 }
 
@@ -98,15 +107,15 @@ void copy_DFT(double_array *x, double_array *y)
     }
 }
 
-void fast_FFT(double_array *x, double_array *y)
+void fast_FFT(double_array *x, complex_array *y)
 {
     /*int k;*/
     int i = 0;
     int newlength = x->length/2;
     double even_xarray[newlength];
     double odd_xarray[newlength];
-    double even_yarray[newlength];
-    double odd_yarray[newlength];
+    complex double even_yarray[newlength];
+    complex double odd_yarray[newlength];
 
     double_array x_even = 
     {
@@ -120,15 +129,15 @@ void fast_FFT(double_array *x, double_array *y)
         newlength
     };
 
-    double_array y_odd = 
+    complex_array y_odd = 
     {
         odd_yarray,
         newlength
     };
 
-    double_array y_even = 
+    complex_array y_even = 
     {
-        odd_yarray,
+        even_yarray,
         newlength
     };
 
@@ -155,7 +164,7 @@ void fast_FFT(double_array *x, double_array *y)
     }
     else if (x->length <= 4)
     {
-        copy_DFT(x, y);
+        slow_DFT(x, y);
     }
     else
     {
@@ -165,11 +174,23 @@ void fast_FFT(double_array *x, double_array *y)
         printf("y_even: ");
         for(i=0;i<y_even.length;i++)
         {
-            printf("%f ", y_even.array[i]);
+            printf("%f %f", creal(y_even.array[i]), cimag(y_even.array[i]));
+        }
+        puts("");
         printf("y_odd: ");
+        for(i=0;i<y_even.length;i++)
+        {
+            printf("%f %f", creal(y_odd.array[i]), cimag(y_odd.array[i]));
+        }
+        puts("");
+        for(i=0;i<y_even.length;i++)
+        {
+            y->array[i] = y_even.array[i];
+            y->array[i+y_even.length] = y_odd.array[i];
+        }
     }
 }
-    
+
 
 /*
  *def FFT(x):
@@ -196,13 +217,13 @@ int main(void)
     /*int16_t x[ADC_BUFFER_SIZE];*/
     /*int16_t y[ADC_BUFFER_SIZE];*/
     double x[ADC_BUFFER_SIZE];
-    double y[ADC_BUFFER_SIZE];
+    complex double y[ADC_BUFFER_SIZE];
     double_array xarray = 
     {
         x,
         ADC_BUFFER_SIZE
     };
-    double_array yarray = 
+    complex_array yarray = 
     {
         y,
         ADC_BUFFER_SIZE
@@ -222,32 +243,32 @@ int main(void)
     /*slow_DFT(x, y);*/
     fast_FFT(&xarray, &yarray);
 
-/*
- *    FILE* fft_fd = fopen("fft_output.txt", "w");
- *
- *    if(fft_fd < ((FILE* ) 0))
- *    {
- *        perror("open fft_output.txt");
- *        return -1;
- *    }
- *    puts("opened fft_output.txt!");
- *
- *    for(i=0;i<ADC_BUFFER_SIZE/2;i++)
- *    {
- *        fprintf(fft_fd, "%lf\n", y[i]);
- *        printf("%lf\n", y[i]);
- *    }
- *
- *    getrusage(RUSAGE_SELF, &ru);
- *
- *    utime = ru.ru_utime;
- *    stime = ru.ru_stime;
- *
- *    printf("RUSAGE :ru_utime => %lld [sec] : %lld [usec], :ru_stime => %lld [sec] : %lld [usec]\n",
- *            (int64_t)utime.tv_sec, (int64_t)utime.tv_usec,
- *            (int64_t)stime.tv_sec, (int64_t)stime.tv_usec);
- *    fclose(fft_fd);
- */
+    /*
+     *    FILE* fft_fd = fopen("fft_output.txt", "w");
+     *
+     *    if(fft_fd < ((FILE* ) 0))
+     *    {
+     *        perror("open fft_output.txt");
+     *        return -1;
+     *    }
+     *    puts("opened fft_output.txt!");
+     *
+     *    for(i=0;i<ADC_BUFFER_SIZE/2;i++)
+     *    {
+     *        fprintf(fft_fd, "%lf\n", y[i]);
+     *        printf("%lf\n", y[i]);
+     *    }
+     *
+     *    getrusage(RUSAGE_SELF, &ru);
+     *
+     *    utime = ru.ru_utime;
+     *    stime = ru.ru_stime;
+     *
+     *    printf("RUSAGE :ru_utime => %lld [sec] : %lld [usec], :ru_stime => %lld [sec] : %lld [usec]\n",
+     *            (int64_t)utime.tv_sec, (int64_t)utime.tv_usec,
+     *            (int64_t)stime.tv_sec, (int64_t)stime.tv_usec);
+     *    fclose(fft_fd);
+     */
 
 }
 

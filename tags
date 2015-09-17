@@ -37,6 +37,7 @@ circbuf_init	local_IIR_test.c	/^void circbuf_init(CircBuf* buffer)$/;"	f
 circbuf_push	local_IIR_test.c	/^void circbuf_push(CircBuf* buffer, int64_t element)$/;"	f
 cmag	local_DFT.c	/^double cmag(complex double number)$/;"	f
 compilation_database_folder	.ycm_extra_conf.py	/^compilation_database_folder = ''$/;"	v
+copy_DFT	local_DFT.c	/^void copy_DFT(double_array *x, double_array *y)$/;"	f
 data	moduletest.py	/^data = np.genfromtxt('data.txt', delimiter=', ', names=True, skiprows=0)$/;"	v
 database	.ycm_extra_conf.py	/^  database = None$/;"	v
 database	.ycm_extra_conf.py	/^  database = ycm_core.CompilationDatabase( compilation_database_folder )$/;"	v
@@ -44,7 +45,7 @@ double_array	local_DFT.c	/^} double_array;$/;"	t	typeref:struct:__anon3	file:
 elliptic_filter	local_IIR_test.c	/^void elliptic_filter(int16_t* x, int16_t* y, int* ymax)$/;"	f
 f	fft.py	/^f = 500$/;"	v
 f	moduletest.py	/^f = open('data.txt')$/;"	v
-fast_FFT	local_DFT.c	/^void fast_FFT(double_array *x, double *y)$/;"	f
+fast_FFT	local_DFT.c	/^void fast_FFT(double_array *x, double_array *y)$/;"	f
 faster_find_discrete_freq	discrete_freq.py	/^def faster_find_discrete_freq(x, k, N):$/;"	f
 ffty	fft.py	/^ffty = FFT(y)$/;"	v
 find_discrete_freq	discrete_freq.py	/^def find_discrete_freq(x, k):$/;"	f

@@ -11,11 +11,14 @@ def FFT(x):
     if N % 2 > 0:
         raise ValueError("size of x must be a power of 2")
     elif N <= 4:  # this cutoff should be optimized
-        return DFT_slow(x)
+        dft_ret =  DFT_slow(x)
+        print dft_ret
+        return dft_ret
     else:
         X_even = FFT(x[::2])
         X_odd = FFT(x[1::2])
         factor = np.exp(-2j * np.pi * np.arange(N) / N)
+        #print factor
         return np.concatenate([X_even + factor[:N / 2] * X_odd,
                                X_even + factor[N / 2:] * X_odd])
 
@@ -26,7 +29,7 @@ import numpy as np
 
 Fs = 8000
 f = 500
-sample = 64
+sample = 32
 wf = np.linspace(0.0, Fs/2, sample/2)
 x = np.arange(sample)
 y = x
